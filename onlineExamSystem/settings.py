@@ -83,9 +83,9 @@ DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.mysql',
                     'NAME': "online_exam2",
-                    'USER': "root",
+                    'USER': "dsf",
                     'PASSWORD': "123456",
-                    'HOST': "localhost",
+                    'HOST': "localhost",  #或者""都代表当前主机
                     'PORT': "3306",
                 }
             }
