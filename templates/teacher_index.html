@@ -1,0 +1,162 @@
+{% extends 'teacher_base2.html' %}
+{% load static %}
+
+{% block title %}
+    添加试题
+{% endblock %}
+
+{% block main-right %}
+    <div class="container" style="margin-top: 40px">
+        <div class="row">
+            <div class="col-xs-8 col-xs-offset-1 col-sm-8 col-sm-offset-1 col-md-6 col-md-offset-1  ">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">
+                            <b>添加试题</b>
+
+                        </h2>
+                        <h4 class="text-center text-success" id="success_create">{{ success_create_msg }}</h4> {# 创建成功提示 #}
+                    <h4 class="text-center text-danger" id="error_create">{{ error_add_ls }}</h4> {# 创建错误提示 #}
+                    <h4 class="text-center text-success" id="success_change">{{ success_change_msg }}</h4> {# 修改成功提示 #}
+                    <h4 class="text-center text-danger" id="error_change">{{ error_change_msg }}</h4> {# 修改错误提示 #}
+                    </div>
+                    <div class="panel-body">
+                        <form action="{% url 'add_question' %}" method="POST" class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="subject" class="col-sm-3 control-label">科目</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="subject" name="subject">
+                                        {% for subject in all_subjects %}
+                                            <option value="{{ subject }}">{{ subject }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group question_type">
+                                <label for="question_type" class="col-sm-3 control-label">题目类型</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="question_type" name="question_type">
+                                        {% for question_type in all_question_types %}
+                                            <option value="{{ question_type }}">{{ question_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="difficult" class="col-sm-3 control-label">题目难度</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="difficult" name="difficult">
+                                        {% for difficult in all_difficults %}
+                                            <option value="{{ difficult }}">{{ difficult }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="knowledge" class="col-sm-3 control-label">题目知识点</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="knowledge" name="knowledge">
+                                        {% for knowledge in all_knowledges %}
+                                            <option value="{{ knowledge.knowledge_name }}">{{ knowledge.knowledge_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="question_name" class="col-sm-3  control-label">题干</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" id="question_name" name="question_name"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group xz">
+                                <label for="option_a" class="col-sm-3 control-label">选项A</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="option_a" name="option_a">
+                                </div>
+                            </div>
+                            <div class="form-group xz">
+                                <label for="option_b" class="col-sm-3 control-label">选项B</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="option_b" name="option_b">
+                                </div>
+                            </div>
+                            <div class="form-group xz">
+                                <label for="option_c" class="col-sm-3 control-label">选项C</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="option_c" name="option_c">
+                                </div>
+                            </div>
+                            <div class="form-group xz">
+                                <label for="option_d" class="col-sm-3 control-label">选项D</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="option_d" name="option_d">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="answer" class="col-sm-3 control-label">答案</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="answer" name="answer" oninput="value=value.replace(/[^abcdABCDynYN]/g,'')" placeholder="仅限abcdABCDynYN"
+                                    >
+
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="score" class="col-sm-3 control-label">分数</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="score" name="score"
+                                           oninput="value=value.replace(/[^\d]/g,'')" placeholder="仅限数字">
+
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                {# 所有字段的错误 #}
+                                <span class="pull-left text-danger col-xs-offset-4 btn-block">{{ add_form.non_field_errors }}</span>
+                                <input type="submit" value="添加"
+                                       class="btn btn-primary  col-xs-offset-2 col-xs-8">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        {#    color: 线条颜色, 默认: '0,0,0' ；三个数字分别为(R,G,B)，注意用,分割#}
+        {#pointColor: 交点颜色, 默认: '0,0,0' ；三个数字分别为(R,G,B)，注意用,分割#}
+        {#opacity: 线条透明度（0~1）, 默认: 0.5#}
+        {#count: 线条的总数量, 默认: 150#}
+        {#zIndex: 背景的z-index属性，css属性用于控制所在层的位置, 默认: -1#}
+        <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="99"
+                src="{% static 'dist/canvas-nest.js' %}"></script>
+        <script type="text/javascript">
+            $('#success_create').click(function () {
+                $('#success_create').hide()
+            });
+            q_type_select = $('.question_type > div > select');
+            console.log(q_type_select);
+            q_type_select.change(function () {
+                console.log(q_type_select[0].value);  {# 取得该下拉框中当前的值 #}
+                if (q_type_select[0].value == '判断题'){
+                    $('.xz').hide();
+                }
+                else {
+                    $('.xz').show();
+                }
+            });
+
+        </script>
+    </div>
+{% endblock %}
+

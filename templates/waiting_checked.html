@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    等待审核页面
+{% endblock %}
+
+{% block header_extends %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <!-- 引入 highcharts.js -->
+    <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+{% endblock %}
+
+{% block nav_home_active %}
+    active
+{% endblock %}
+
+{% block content %}
+
+    <h3 class="home-content">请等待站长审核</h3>
+
+{% endblock %} 

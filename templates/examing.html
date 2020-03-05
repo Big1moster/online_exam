@@ -1,0 +1,361 @@
+{% load static %}{#加载静态文件库，就可以使用静态文件#}
+{% load myfilter %}
+<!DOCTYPE html>
+<html lang="zh-CN">  {# 语言设置为中文#}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {# 告诉ie浏览器使用聚型的内核 #}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# ，响应式，适应屏幕，根据屏幕自动调整#}
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+    <title>{{ exam.exam_name }}</title> {# 子模板填充后显示填充后的内容，不填充则显示标签里的默认内容 #}
+
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/admin_base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+    {# 引入bootstrap的css样式 #}
+    <script type="text/javascript" src="{% static 'jquery.1.12.4.min.js' %}"></script>
+    {# Bootstrap 的所有 JavaScript 插件都依赖 jQuery，因此 jQuery 必须在 Bootstrap 之前引入#}
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+
+</head>
+<body>
+<div class="container-fluid bg_muted">
+    <div class="main row">
+        <div class="outer col-xs-offset-1 col-xs-10">
+            <div class="main-top text-center bg-success">
+                <div>
+                    <p class="h1 letter_spacing padding_top_10">{{ exam.exam_name }}</p>
+                </div>
+                <div>
+                    <p>考试说明：{{ exam.exam_describe }}</p>
+                </div>
+                <div>
+                    <span>单选题({{ single_choice_num }})</span>
+                    <span>多选题({{ mul_choice_num }})</span>
+                    <span>判断题({{ judge_num }})</span>
+                </div>
+            </div>
+
+            <div class="main-bottom row">
+                <div class="main-bottom-left col-xs-7">
+                    <form id="form">
+                        {% if single_choice_objs %}
+                            <div class="modal-content row">
+                                <h4 class="col-xs-offset-1 pull-left letter_spacing">一、单选题。<br></h4>
+                            </div>
+                        {% endif %}
+                        {% for question in single_choice_objs %}
+                            <div class=" row margin_bottom_30 margin_top_30" onchange="showPoint('{{ question.id }}')">
+                                <div class="row bg-info">
+                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                            class="text-primary">{{ forloop.counter }}【{{ question.question_type }}】. </span>{{ question.question_name }}：
+                                    </h5>
+                                </div>
+                                <div class="row bg-success">
+                                    <input type="radio" name="answer_{{ question.id }}" value="default" hidden>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}"
+                                                       value="a">{{ question.option|split_self:0 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}"
+                                                       value="b">{{ question.option|split_self:1 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}"
+                                                       value="c">{{ question.option|split_self:2 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}"
+                                                       value="d">{{ question.option|split_self:3 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if mul_choice_objs %}
+                            <div class="modal-content row">
+                                <h4 class="col-xs-offset-1 pull-left letter_spacing">二、多选题。<br></h4>
+                            </div>
+                        {% endif %}
+                        {% for question in mul_choice_objs %}
+                            <div class="row margin_bottom_30 margin_top_30" onchange="showPoint('{{ question.id }}')">
+                                <div class="row bg-info">
+                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                            class="text-primary">{{ forloop.counter }}【{{ question.question_type }}】.  </span>{{ question.question_name }}：
+                                    </h5>
+                                </div>
+                                <div class="row bg-success">
+                                    <input type="checkbox" name="answer_{{ question.id }}" value="default" hidden>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="checkbox" name="answer_{{ question.id }}"
+                                                       value="a">{{ question.option|split_self:0 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="checkbox" name="answer_{{ question.id }}"
+                                                       value="b">{{ question.option|split_self:1 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="checkbox" name="answer_{{ question.id }}"
+                                                       value="c">{{ question.option|split_self:2 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-2 pull-left">
+                                            <label>
+                                                <input type="checkbox" name="answer_{{ question.id }}"
+                                                       value="d">{{ question.option|split_self:3 }}
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if judge_objs %}
+                            <div class="modal-content row">
+                                <h4 class="col-xs-offset-1 pull-left letter_spacing">三、判断题。<br></h4>
+                            </div>
+                        {% endif %}
+                        {% for question in judge_objs %}
+                            <div class=" row margin_bottom_30 margin_top_30" onchange="showPoint('{{ question.id }}')">
+                                <div class="row bg-info">
+                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                            class="text-primary">{{ forloop.counter }}【{{ question.question_type }}】.  </span>{{ question.question_name }}：
+                                    </h5>
+                                </div>
+                                <div class="row bg-success">
+
+                                    <div class="row text-muted">
+                                        <p class="col-xs-offset-3 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}" value="yes">正确
+                                            </label>
+                                            <br>
+                                        </p>
+                                        <p class="col-xs-offset-3 pull-left">
+                                            <label>
+                                                <input type="radio" name="answer_{{ question.id }}" value="no">错误
+                                            </label>
+                                            <br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </form>
+                </div>
+                <div class="main-bottom-right pull-right row col-xs-4">
+                    <div id="answer_card" class="answer_card_fix modal-content padding_top_10">
+                        <div>
+                            <h5>
+                                <span><b>答题卡</b></span> &nbsp; <span id="current_num" class="text-success h4">0</span>/<span class="h4">{{ question_num }}</span>
+                                <span class="margin_left_30"><b>剩余时间:</b><span
+                                        id="remainTime" class="text-danger h4"></span></span>
+
+                            </h5>
+
+                            <hr class="input_margin_top">
+                        </div>
+                    {% if single_choice_objs %}
+                            <div>
+                            <div>
+                                <p>
+                                    <span><b>单选题</b></span>
+                                    <span class="text-muted">（每题{{ exam.exam_template.plan.single_choice_score }}分，共{{ single_choice_num }}题）</span>
+                                </p>
+                            </div>
+                            <div class="options_div ">
+                                {% for question in single_choice_objs %}
+                                    <a href="#" id="answer_{{ question.id }}"><span class="text-danger">{{ forloop.counter }}</span></a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="input_margin_top">
+                        {% endif %}
+
+                    {% if mul_choice_objs %}
+                            <div>
+                            <div>
+                                <p>
+                                    <span><b>多选题</b></span>
+                                    <span class="text-muted">（每题{{ exam.exam_template.plan.mul_choice_score }}分，共{{ mul_choice_num }}题）</span>
+                                </p>
+                            </div>
+                            <div class="options_div ">
+                                {% for question in mul_choice_objs %}
+                                    <a href="#" id="answer_{{ question.id }}"><span class="text-danger">{{ forloop.counter|add:single_choice_num }}</span></a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="input_margin_top">
+                        {% endif %}
+                     {% if judge_objs %}
+                            <div>
+                            <div>
+                                <p>
+                                    <span><b>判断题</b></span>
+                                    <span class="text-muted">（每题{{ exam.exam_template.plan.mul_choice_score }}分，共{{ mul_choice_num }}题）</span>
+                                </p>
+                            </div>
+                            <div class="options_div ">
+                                {% for question in judge_objs %}
+                                    <a href="#" id="answer_{{ question.id }}"><span class="text-danger">{{ forloop.counter|add:single_choice_num|add:mul_choice_num }}</span></a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="input_margin_top">
+                        {% endif %}
+                        <div class="row text-center">
+                            <a href="#" id="submit_btn" onclick="submitForm()" class="btn btn-primary col-xs-offset-2 col-xs-8">交卷</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $('#a').click();
+    window.onbeforeunload = function (event) {
+        event.returnValue = "确定离开考试？";
+    };
+    function submitForm() {
+            var form_data = $("#form").serializeArray(); {# 不知道为什么，动态获取id不加a字符串会取不到表单 #}
+            console.log(typeof form_data, form_data);
+            var values = {};
+            for (var i=0;i<form_data.length;i++){
+                console.log(i,values[form_data[i].name]);
+                console.log(values);
+                if (values[form_data[i].name]) {
+                    values[form_data[i].name] += form_data[i].value;
+                }else{
+                    values[form_data[i].name] = form_data[i].value;
+                }
+            }
+            //预先发送csrf值，防止出现403错误,没啥用
+                $.ajaxSetup({data: {csrfmiddlewaretoken: '{{ csrf_token }}'}});
+{#            values['csrfmiddlewaretoken'] = '{{ csrf_token }}';#}
+        values['exam_id'] = {{ exam.id }};
+
+            console.log(values);
+            $.ajax({
+                url:{% url 'examing' %},
+                type: 'POST',
+                data: values,
+                cache: false,
+                success: function (result, text_status) {
+                    console.log(result, typeof result);
+                    if (result['status'] == 'SUCCESS') {
+                        //更新查询行
+
+                        alert('得分：'+result['examed_score']+result['right_answer']);
+                    }
+                    else {
+                        alert('ajax_error_msg');
+                    }
+                },
+                error: function (xhr, result, error_msg) {
+                    console.log(xhr, result, error_msg);
+                    console.log(this);   //调用本次ajax请求时传递的options参数
+                }
+            });
+            clickAll(exam_id);
+        }
+
+    var ls = [];
+    function showPoint(question_id) {  {# 检测到即将发生改变之前执行此函数 #}
+        if (ls.indexOf(question_id)==-1){
+            ls.push(question_id);
+        }
+        $("#current_num").html(ls.length);
+        $('#answer_'+question_id).children().attr('class','text-success');
+
+
+        {#        var form_data = $("#form").serializeArray();#}
+        {#        console.log(form_data);#}
+        {#        var name = form_data[0]['name'];#}
+        {#        var value = form_data[0]['value'];#}
+        {#        $("input[type='radio'][name="+name+"]").parent().parent().parent().attr('class','row text-muted');  {# 先将所有的单选按钮设置为默认样式 #}
+        {#        $("input[type='radio'][name="+name+"][value="+value+"]").parent().parent().parent().attr('class','row');#}
+        {##}
+        {#        $("input[type='checkbox][name="+name+"][value="+value+"]");#}
+
+    }
+    var SysSecond = parseInt({{ exam.exam_template.get_exam_time }}) * 60;
+    InterValObj = window.setInterval(SetRemainTime, 1000); //间隔函数，1秒执行
+
+    function SetRemainTime() {
+        if (SysSecond > 0) {
+            SysSecond = SysSecond - 1;
+            var second = Math.floor(SysSecond % 60);            // 计算秒
+            var minite = Math.floor((SysSecond / 60) % 60);      //计算分
+            var hour = Math.floor((SysSecond / 3600) % 24);      //计算小时
+
+            var hourDiv = "<span id='hourSpan'>" + hour + "小时" + "</span>";
+
+            $("#remainTime").html(hourDiv + minite + "分" + second + "秒");
+
+            if (hour === 0) {//当不足1小时时隐藏小时
+                $('#hourSpan').css('display', 'none');
+            }
+
+        } else {//剩余时间小于或等于0的时候，就停止间隔函数
+            window.clearInterval(InterValObj);
+            //这里可以添加倒计时时间为0后需要执行的事件
+            alert("时间为0");
+        }
+    }
+
+
+    onscroll = function () {
+        var st = document.documentElement.scrollTop || document.body.scrollTop;
+{#        console.log(st);#}
+
+        if (st >= 300) {
+            $('.answer_card_fix').attr('class', "modal-content padding_top_10 answer_card_fix_top");
+        }
+    }
+
+</script>
+</body>
+</html>

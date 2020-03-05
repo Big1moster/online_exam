@@ -1,0 +1,84 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html, body {
+      height: 100%;
+      width: 100%;
+    }
+.main-left{
+    height: 600px;
+}
+.main-left-top{
+    height: 100px;
+}
+#change_touxiang{
+    height: 100px;
+    width: 100px;
+    border-radius: 50px;
+    margin-top: 5px ;
+    margin-bottom: 5px;
+}
+.main-left-top .touxiang{
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    margin-top: 5px ;
+    margin-bottom: 5px;
+}
+/*默认左侧功能块是关闭状态*/
+/*#user_manage_list,#sj_manage_list,#exam_manage_list{*/
+    /*display: none;*/
+/*}*/
+.main-right-bottom{
+    margin-top: 20px;
+}
+.margin_top_30{
+    margin-top: 30px;
+}
+
+.margin_bottom_30{
+    margin-bottom: 30px;
+}
+.padding_top_10{
+    padding:10px;
+}
+.letter_spacing{
+    letter-spacing:4px;
+}
+.input_margin_top{
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+}
+.options_div a{
+    display: inline-block;
+
+    height: 32px;
+    line-height: 32px;
+    border: 1px solid #dcdcdc;
+    margin: 3px 5px;
+    padding-right: 15px;
+    padding-left: 15px;
+    border-radius: 5px;
+    background-color: #e7e7e7;
+    font-size: 14px;
+    vertical-align: top;
+}
+.margin_left_30{
+    margin-left: 30px;
+}
+.bg_muted{
+    background-color: #f5f5f5;
+}
+div.answer_card_fix{
+    position: fixed;
+    top:170px
+}
+div.answer_card_fix_top{
+    position: fixed;
+    top:20px
+}
+/*#dropdownMenu1{*/
+    /*margin-top: 5px;*/
+/*}*/

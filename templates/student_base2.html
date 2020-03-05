@@ -1,0 +1,88 @@
+{% load static %}{#加载静态文件库，就可以使用静态文件#}
+<!DOCTYPE html>
+<html lang="zh-CN">  {# 语言设置为中文#}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {# 告诉ie浏览器使用聚型的内核 #}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# ，响应式，适应屏幕，根据屏幕自动调整#}
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+    <title>{% block title %}{% endblock %}</title> {# 子模板填充后显示填充后的内容，不填充则显示标签里的默认内容 #}
+
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/admin_base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+    {# 引入bootstrap的css样式 #}
+    <script type="text/javascript" src="{% static 'jquery.1.12.4.min.js' %}"></script>
+    {# Bootstrap 的所有 JavaScript 插件都依赖 jQuery，因此 jQuery 必须在 Bootstrap 之前引入#}
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+
+    {% block header_extends %}{% endblock %}
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="main row">
+        <div class="main-left col-xs-3 bg-warning">
+            <div class="main-left-top row">
+                <img src="/media/{{ request.user.touxiang }}" alt="头像" class="touxiang col-xs-offset-5">
+                <div class="dropdown">
+                    <p class="dropdown-toggle col-xs-offset-5" id="username" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="true">
+                        <span class="text-muted">学生：</span>{{ request.user.username }}
+                        <span class="caret"></span>
+                    </p>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="username">
+                        <li><a href="{% url 'personal_info' %}">个人资料</a></li>
+                        <li><a href="{% url 'logout' %}">安全退出</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="main-left-bottom">
+                <div class="dropdown row">
+                    <p class="dropdown-toggle col-xs-offset-1" id="base_func">
+                        基本功能
+                        <span class="caret"></span>
+                    </p>
+                    <ul class="list-group" id="base_func_list">
+                        <li class="list-group-item text-center"><a href="{% url 'student_index' %}">考试</a></li>
+                        {# 文本对齐类 #}
+                        <li class="list-group-item text-center"><a href="{% url 'check_grade' %}">成绩</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-right col-xs-9 ">
+            {% block main-right %}{% endblock %}
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var c = function (manage_id, manage_list_id) {
+            var p_manage = document.getElementById(manage_id);
+            var ul_manage_list = document.getElementById(manage_list_id);
+            p_manage.onclick = function () {
+                if (String(ul_manage_list.style.display) == ''){
+                    ul_manage_list.style.display = 'none';
+                }
+                else if (String(ul_manage_list.style.display) == 'block') {
+                    ul_manage_list.style.display = 'none';
+                    p_manage.parentElement.className = p_manage.parentElement.className.slice(0, -10);
+                }
+                else {
+                    ul_manage_list.style.display = 'block';
+                    p_manage.parentElement.className += ' bg-danger';
+                }
+            };
+        };
+        c('base_func', 'base_func_list');
+    });
+
+</script>
+{% block script_extends %}{% endblock %}
+</body>
+</html>

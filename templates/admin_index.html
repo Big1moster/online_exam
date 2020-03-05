@@ -1,0 +1,229 @@
+{% extends 'admin_base0.html' %}
+{% load static %}
+
+{% block title %}
+    用户列表
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'query_user' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="level" class="control-label">层次</label>
+        <select class="form-control" id="level" name="level">
+            <option value="本科" {% ifequal last_query_form.level '本科' %}selected{% endifequal %}>本科</option>
+            <option value="专科" {% ifequal last_query_form.level '专科' %}selected{% endifequal %}>专科</option>
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="major" class="control-label">专业</label>
+        <select class="form-control" id="major" name="major">
+            <option value="软件工程" {% ifequal last_query_form.major '软件工程' %}selected{% endifequal %}>软件工程</option>
+            <option value="法学" {% ifequal last_query_form.major '法学' %}selected{% endifequal %}>法学</option>
+            <option value="数学" {% ifequal last_query_form.major '数学' %}selected{% endifequal %}>数学</option>
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="username">用户名</label>
+        <input type="text" class="form-control" id="username" placeholder="用户名" name="username"
+               value="{{ last_query_form.username }}">
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="idcard">身份证号</label>
+        <input type="text" class="form-control" id="idcard" placeholder="身份证号" name="idcard"
+               value="{{ last_query_form.idcard }}">
+    </div>
+{% endblock %}
+
+
+{% block th %}
+    <th class="text-center"><b>#</b></th>
+    <th class="text-center"><b>姓名</b></th>
+    <th class="text-center"><b>身份证号码</b></th>
+    <th class="text-center"><b>层次</b></th>
+    <th class="text-center"><b>专业</b></th>
+    <th class="text-center"><b>权限</b></th>
+    <th class="text-center"><b>状态</b></th>
+    <th class="text-center"><b>操作</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for user_editor in objs %}
+        <tr id="{{ user_editor.idcard }}">  {# 此id用于删除该行 #}
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ user_editor.username }}</td>
+            <td class="text-center">{{ user_editor.idcard }}</td>
+            <td class="text-center">{{ user_editor.level }}</td>
+            <td class="text-center">{{ user_editor.major }}</td>
+            <td class="text-center">{{ user_editor.role }}</td>
+
+            {% if user_editor.is_checked %}
+                <td class="text-center bg-success"><a href="#" class="text-success" onclick="changeChecked('{{ user_editor.idcard }}')">已审核</a></td>
+                {% else %}
+                <td class="text-center bg-danger"><a href="#" class="text-danger" onclick="changeChecked('{{ user_editor.idcard }}')">未审核</a></td>
+            {% endif %}
+
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ user_editor.username }}">编辑</a>
+                {# data-target属性必须与model绑定才能弹出model #}
+                {# 如果多个元素的data-target相同，那他们打开的是同一个目标，即第一个 #}
+                <div class="modal fade" tabindex="-1" id="{{ user_editor.username }}" role="dialog"
+                     aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel"><b>编辑用户</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'admin_index' %}" method="POST" class="form-horizontal">
+                                    {# action="#"  默认想当前页面提交#}
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="username" class="col-sm-2  control-label">姓名</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" hidden name="old_username"
+                                                   value="{{ user_editor.username }}">
+                                            <input type="text" class="form-control" id="username" name="username"
+                                                   placeholder="用户名" value="{{ user_editor.username }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="col-sm-2 control-label">密码</label>
+                                        <div class="col-sm-9">
+                                            <input readonly type="text" class="form-control" id="password"
+                                                   name="pwd"
+                                                   placeholder="密码" value="{{ user_editor.password }}">
+                                            {# 不需要检验该字段 #}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="idcard" class="col-sm-2 control-label">身份证号</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="old_idcard"
+                                                   hidden value="{{ user_editor.idcard }}">
+                                            <input type="text" class="form-control" id="idcard" name="idcard"
+                                                   placeholder="身份证号" value="{{ user_editor.idcard }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="level" class="col-sm-2 control-label">层次</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="level" name="level">
+                                                {% ifequal user_editor.level '本科' %}
+                                                    <option value="本科" selected>本科</option>
+                                                    <option value="专科">专科</option>
+                                                {% else %}
+                                                    <option value="本科">本科</option>
+                                                    <option value="专科" selected>专科</option>
+                                                {% endifequal %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="major" class="col-sm-2 control-label">专业</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="major" name="major">
+                                                <option value="软件工程"
+                                                        {% ifequal user_editor.major '软件工程' %}selected{% endifequal %}>
+                                                    软件工程
+                                                </option>
+                                                <option value="法学"
+                                                        {% ifequal user_editor.major '法学' %}selected{% endifequal %}>
+                                                    法学
+                                                </option>
+                                                <option value="数学"
+                                                        {% ifequal user_editor.major '数学' %}selected{% endifequal %}>
+                                                    数学
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="role" class="col-sm-2 control-label">角色</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="role" name="role">
+                                                <option value="student"
+                                                        {% ifequal user_editor.role 'student' %}selected{% endifequal %}>
+                                                    学生
+                                                </option>
+                                                <option value="teacher"
+                                                        {% ifequal user_editor.role 'teacher' %}selected{% endifequal %}>
+                                                    教师
+                                                </option>
+                                                <option value="administrator"
+                                                        {% ifequal user_editor.role 'administrator' %}selected{% endifequal %}>
+                                                    管理员
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <input type="submit" value="更新资料"
+                                               class="btn btn-primary  col-xs-offset-2 col-xs-8">
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" onclick="deleteObj('{{ user_editor.idcard }}')">删除</a>
+            </td>
+        </tr>
+    {% empty %}
+        暂无用户
+    {% endfor %}
+{% endblock %}
+
+{% block model_name %}
+    用户
+{% endblock %}
+
+{% block ajax_delete_url %}
+    {% url 'admin_index' %}
+{% endblock %}
+
+
+{% block script_extends %}
+
+    <script type="text/javascript">
+        function changeChecked(obj_unique) {
+        console.log(obj_unique, typeof obj_unique);
+        $.ajax({
+            url:{% url 'admin_index' %}, {# 请求路径 #}
+            type: 'POST', {# 请求方法 #}
+            data: {
+                {# 规定要发送到服务器的数据。 #}
+                obj_unique: obj_unique,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            cache: false, {# 表示浏览器是否缓存被请求页面。默认是 true #}
+            success: function (result, text_status) {  {# 成功以后的回调 返回字面量对象,描述状态的字符串 #}
+                console.log(result, typeof result);
+                console.log(text_status);
+                if (result['status'] == 'SUCCESS') {
+                    //更新审核状态
+                     window.location.reload();
+                }
+                else {
+                    alert(result['ajax_delete_error_msg']);
+                }
+            },
+            error: function (xhr, result, error_msg) {  {# 异常之后的回调 3个参数:即XMLHttpRequest对象、错误信息、捕获的错误对象(可选)#}
+                console.log(xhr, result, error_msg);
+                console.log(this);   //调用本次ajax请求时传递的options参数
+            }
+        })
+    }
+    </script>
+{% endblock %}

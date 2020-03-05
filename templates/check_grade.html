@@ -1,0 +1,117 @@
+{% extends 'student_base0.html' %}
+{% load myfilter %}
+{% load static %}
+
+{% block title %}
+    成绩查看
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'check_grade' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="subject" class="control-label">科目</label>
+        <select class="form-control" id="subject" name="subject">
+        <option value="{{ subject }}">{{ subject }}</option>
+            {% if last_query_form.subject %}
+                <option value="{{ last_query_form.subject }}" selected>{{ last_query_form.subject }}</option>
+            {% endif %}
+            {% for subject in all_subjects %}
+                <option value="{{ subject }}">{{ subject }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group input_margin_top">
+        <label for="exam_th" class="control-label"> 批次</label>
+        <select class="form-control" id="exam_th" name="exam_th">
+            {% if last_query_form.exam_th %}
+                <option value="{{ last_query_form.exam_th }}" selected>{{ last_query_form.exam_th }}</option>
+            {% endif %}
+            {% for exam_th in all_exam_ths %}
+                <option value="{{ exam_th }}">{{ exam_th }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endblock %}
+
+
+{% block th %}
+    <th class="text-center"><b>#</b></th>
+
+    <th class="text-center"><b>姓名</b></th>
+    <th class="text-center"><b>身份证号</b></th>
+    <th class="text-center"><b>层次</b></th>
+    <th class="text-center"><b>专业</b></th>
+    <th class="text-center"><b>科目</b></th>
+    <th class="text-center"><b>考试批次</b></th>
+    <th class="text-center"><b>成绩/详情</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for exam_record in objs %}
+        <tr id="{{ exam_record.id }}">  {# 此id用于删除该行 #}
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ exam_record.user.username }}</td>
+            <td class="text-center">{{ exam_record.user.idcard }}</td>
+            <td class="text-center">{{ exam_record.user.level }}</td>
+            <td class="text-center">{{ exam_record.user.major }}</td>
+            <td class="text-center">{{ exam_record.exam.exam_template.subject }}</td>
+            <td class="text-center">{{ exam_record.exam.exam_template.exam_th }}</td>
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ exam_record.id }}grade" class="text-success">{{ exam_record.grade }}</a>
+                <div class="modal fade" tabindex="-1" id="{{ exam_record.id }}grade" role="dialog"
+                     aria-labelledby="myModalLabe">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="myModalLabe"><b>成绩查看</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered table-hover input_margin_top">
+                                    {# 带边框-鼠标悬停效果 #}
+                                    <tbody>
+                                        <tr class="row">
+                                            <th class="text-center col-xs-3">开始时间</th>
+                                            <td class="text-center col-xs-7">{{ exam_record.exam.exam_template.exam_start_time }}</td>
+                                        </tr>
+                                    <tr class="row">
+                                            <th class="text-center col-xs-3">结束时间</th>
+                                            <td class="text-center col-xs-7">{{ exam_record.create_time }}</td>
+                                        </tr>
+
+                                    <tr class="row">
+                                            <th class="text-center col-xs-3">成绩</th>
+                                            <td class="text-center col-xs-7"><b>{{ exam_record.grade }}</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+    {% empty %}
+        <h3 class="text-danger">暂无考试记录</h3>
+    {% endfor %}
+
+{% endblock %}
+
+{% block model_name %}
+    考试记录
+{% endblock %}
+
+{% block ajax_delete_url %}
+    {% url 'change_exam' %}
+{% endblock %}
+
+
+

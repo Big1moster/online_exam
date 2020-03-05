@@ -1,0 +1,580 @@
+{% extends 'admin_base0.html' %}
+{% load myfilter %}
+{% load static %}
+
+{% block title %}
+    试卷生成
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'query_exam' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="level" class="control-label">层次</label>
+        <select class="form-control" id="level" name="level">
+            {% if last_query_form.level %}
+                <option value="{{ last_query_form.level }}" selected>{{ last_query_form.level }}</option>
+            {% endif %}
+            {% for level in all_levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="subject" class="control-label">科目</label>
+        <select class="form-control" id="subject" name="subject">
+            {% if last_query_form.subject %}
+                <option value="{{ last_query_form.subject }}" selected>{{ last_query_form.subject }}</option>
+            {% endif %}
+            {% for subject in all_subjects %}
+                <option value="{{ subject }}">{{ subject }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="major" class="control-label">专业</label>
+        <select class="form-control" id="major" name="major">
+            {% if last_query_form.major %}
+                <option value="{{ last_query_form.major }}" selected>{{ last_query_form.major }}</option>
+            {% endif %}
+            {% for major in all_majors %}
+                <option value="{{ major }}">{{ major }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="exam_template">试卷模板</label>
+        <input type="text" class="form-control" id="exam_template" placeholder="试卷模板" name="exam_template"
+               value="{{ last_query_form.exam_template }}">
+    </div>
+{% endblock %}
+
+{% block function_btn %}
+    <a href="#" class="btn btn-primary  input_margin_top" data-toggle="modal"
+       data-target="#defined">自定义生成</a>
+    <div class="modal fade" tabindex="-1" id="defined" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">自定义生成</h4>
+                </div>
+                <div class="modal-body row">
+                    <form action="#" method="POST" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="row input_margin_top">
+                            {#                            <div class="form-group col-xs-offset-2 col-xs-4">#}
+                            {#                                <label class="sr-only" for="exampleInputAmount0">考试名称</label>#}
+                            {#                                <div class="input-group ">#}
+                            {#                                    <div class="input-group-addon ">考试名称</div>#}
+                            {#                                    <input type="text" class="form-control" id="exampleInputAmount0">#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            <div class="form-group col-xs-offset-1">
+                                <label class="sr-only" for="exampleInputAmount10">考试批次</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">考试批次</div>
+                                    <input type="text" class="form-control" id="exampleInputAmount10">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row input_margin_top">
+                            <div class="form-group col-xs-offset-2 col-xs-4">
+                                <label for="level" class="sr-only">选择科目</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon ">选择科目</div>
+                                    <select class="form-control" id="level" name="level">
+                                        <option value="bk" selected>数学</option>
+                                        <option value="zk">语文</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group  col-xs-offset-1 col-xs-4">
+                                <label for="level1" class="sr-only">选择方案</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon ">选择方案</div>
+                                    <select class="form-control" id="level1" name="level1">
+                                        <option value="bk" selected>测试方案</option>
+                                        <option value="zk">调试方案</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row input_margin_top">
+                            <div class="form-group  col-xs-offset-2 col-xs-4">
+                                <label for="level11" class="sr-only">选择难度</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon ">选择难度</div>
+                                    <select class="form-control" id="level11" name="level11">
+                                        <option value="bk" selected>一般</option>
+                                        <option value="zk">困觉</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group  col-xs-offset-1">
+                                <label class="sr-only" for="exampleInputAmount4">考试时长</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">考试时长</div>
+                                    <input type="datetime" class="form-control"
+                                           id="exampleInputAmount4">
+                                    <div class="input-group-addon">分钟</div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="row input_margin_top">
+                            <div class="form-group col-xs-offset-2 col-xs-4">
+                                <label class="sr-only" for="exampleInputAmount00">考试开始</label>
+                                <div class="input-group ">
+                                    <div class="input-group-addon ">考试开始</div>
+                                    <input type="text" class="form-control" id="exampleInputAmount00">
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-offset-1">
+                                <label class="sr-only" for="exampleInputAmount101">考试结束</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">考试结束</div>
+                                    <input type="text" class="form-control" id="exampleInputAmount101">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">
+                                Close
+                            </button>
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+                        {#                                        <div class="row input_margin_top">#}
+                        {#                                            <input type="submit" value="添加试卷"#}
+                        {#                                                   class="btn btn-primary  col-xs-offset-2 col-xs-8">#}
+                        {#                                        </div>#}
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="btn btn-primary  input_margin_top" data-toggle="modal"
+       data-target="#random">随机生成</a>
+    <div class="modal fade" tabindex="-1" id="random" role="dialog" aria-labelledby="randomLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="randomLabel">随机生成</h4>
+                </div>
+                <div class="modal-body row">
+                    <form action="#" method="POST" class="form-inline">
+                        <form class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="row input_margin_top">
+                                <div class="form-group col-xs-offset-2">
+                                    <label class="sr-only" for="exam_name">试卷名</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-addon ">试卷名</div>
+                                        <input type="text" class="form-control" id="exam_name" name="exam_name">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row input_margin_top">
+                                <div class="form-group col-xs-offset-2">
+                                    <label for="exam_template_add" class="sr-only">试卷模板</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon ">试卷模板</div>
+                                        <select class="form-control" id="exam_template_add" name="exam_template_name">
+                                            {% for exam_template in all_templates %}
+                                                <option value="{{ exam_template.exam_template_name }}">{{ exam_template.exam_template_name }}</option>
+                                            {% empty %}
+                                                <option value="no" disabled>暂无试卷模板</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row input_margin_top">
+                                <div class="form-group col-xs-offset-2">
+                                    <label for="exam_template_level" class="sr-only">层次</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon ">层次</div>
+                                        <select class="form-control" id="exam_template_level" name="level">
+                                            {% for level in all_levels %}
+                                                <option value="{{ level }}">{{ level }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row input_margin_top">
+                                <div class="form-group col-xs-offset-2">
+                                    <label for="exam_template_major" class="sr-only">专业</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon ">专业</div>
+                                        <select class="form-control" id="exam_template_major" name="major">
+                                            {% for major in all_majors %}
+                                                <option value="{{ major }}">{{ major }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row input_margin_top">
+                                <div class="form-group col-xs-offset-2">
+                                    <label class="sr-only" for="exam_num">试卷数量</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-addon ">试卷数量</div>
+                                        <input type="text" class="form-control" id="exam_num" name="exam_num"
+                                               oninput="value=value.replace(/[^\d]/g,'')">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">
+                                    关闭
+                                </button>
+                                <input type="submit" class="btn btn-primary" value="生成试卷">
+                            </div>
+                        </form>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {#    <div class="row input_margin_top">#}
+    {#                                            <div class="form-group  col-xs-offset-1 col-xs-4 ">#}
+    {#                                                <label for="exam_level" class="sr-only">专业</label>#}
+    {#                                                <div class="input-group">#}
+    {#                                                    <div class="input-group-addon ">专业</div>#}
+    {#                                                    <select class="form-control" id="exam_level" name="level">#}
+    {#                                                        <option value="{{ exam.level }}"#}
+    {#                                                                selected>{{ exam_template.plan.plan_name }}</option>#}
+    {#                                                        {% for level in all_levels %}#}
+    {#                                                            <option value="{{ level }}">{{ level }}</option>#}
+    {#                                                        {% endfor %}#}
+    {#                                                    </select>#}
+    {#                                                </div>#}
+    {#                                            </div>#}
+    {#                                            <div class="form-group  col-xs-offset-1">#}
+    {#                                                <label for="exam_major" class="sr-only">专业</label>#}
+    {#                                                <div class="input-group">#}
+    {#                                                    <div class="input-group-addon ">专业</div>#}
+    {#                                                    <select class="form-control" id="exam_major" name="major">#}
+    {#                                                        <option value="{{ exam.major }}"#}
+    {#                                                                selected>{{ exam.major }}</option>#}
+    {#                                                        {% for major in all_majors %}#}
+    {#                                                            <option value="{{ major }}">{{ major }}</option>#}
+    {#                                                        {% endfor %}#}
+    {#                                                    </select>#}
+    {#                                                </div>#}
+    {#                                            </div>#}
+    {#                                        </div>#}
+    {#                                    #}
+    {#                                    <div class="row input_margin_top">#}
+    {#                                            <div class="form-group  col-xs-offset-1 col-xs-4 ">#}
+    {#                                                <label for="exam_difficult" class="sr-only">专业</label>#}
+    {#                                                <div class="input-group">#}
+    {#                                                    <div class="input-group-addon ">专业</div>#}
+    {#                                                    <select class="form-control" id="exam_difficult" name="difficult">#}
+    {#                                                        <option value="{{ exam.level }}"#}
+    {#                                                                selected>{{ exam_template.plan.plan_name }}</option>#}
+    {#                                                        {% for level in all_levels %}#}
+    {#                                                            <option value="{{ level }}">{{ level }}</option>#}
+    {#                                                        {% endfor %}#}
+    {#                                                    </select>#}
+    {#                                                </div>#}
+    {#                                            </div>#}
+    {#                                            <div class="form-group  col-xs-offset-1">#}
+    {#                                                <label for="exam_major" class="sr-only">专业</label>#}
+    {#                                                <div class="input-group">#}
+    {#                                                    <div class="input-group-addon ">专业</div>#}
+    {#                                                    <select class="form-control" id="exam_major" name="major">#}
+    {#                                                        <option value="{{ exam.major }}"#}
+    {#                                                                selected>{{ exam.major }}</option>#}
+    {#                                                        {% for major in all_majors %}#}
+    {#                                                            <option value="{{ major }}">{{ major }}</option>#}
+    {#                                                        {% endfor %}#}
+    {#                                                    </select>#}
+    {#                                                </div>#}
+    {#                                            </div>#}
+    {#                                        </div>#}
+{% endblock %}
+
+
+{% block th %}
+    <th class="text-center"><b>#</b></th>
+
+    <th class="text-center"><b>试卷模板</b></th>
+    <th class="text-center"><b>单选题数量</b></th>
+    <th class="text-center"><b>多选题数量</b></th>
+    <th class="text-center"><b>判断题数量</b></th>
+    <th class="text-center"><b>总分</b></th>
+    <th class="text-center"><b>操作</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for exam in objs %}
+        <tr id="{{ exam.id }}">  {# 此id用于删除该行 #}
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ exam.exam_name }}</td>
+            <td class="text-center">{{ exam.exam_template.exam_template_name }}</td>
+            <td class="text-center">{{ exam.get_single_choice_num }}</td>
+            <td class="text-center">{{ exam.get_mul_choice_num }}</td>
+            <td class="text-center">{{ exam.get_judge_num }}</td>
+            <td class="text-center">{{ exam.get_total_score }}</td>
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ exam.id }}yl">预览</a>
+                <div class="modal fade" tabindex="-1" id="{{ exam.id }}yl" role="dialog"
+                     aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="row">
+                                <h3 class="col-xs-offset-1 text-center">{{ exam.exam_name }}</h3>
+                            </div>
+
+                            <form>
+
+                                {#                                {% for i in ''|rjust:exam.get_total_num %}  {# 将内容右对齐填充空格至给定长度 #}
+                                {#                                    {{ forloop.counter }}、#}
+                                {#                                    {% endfor %}#}
+
+                                {% for question_type,questions in exam.question_id_ls|parse_dict_str|dictToLs %}
+
+                                    {% ifequal question_type 'single_choice_id_ls' %}
+                                        <div class="row">
+                                            <div class="row">
+                                                <h4 class="col-xs-offset-1 pull-left">一、单选题。<br></h4>
+                                            </div>
+
+                                            {% for question in questions %}
+                                                <div class="row">
+                                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                                            class="text-primary">{{ forloop.counter }}. </span>{{ question.question_name }}：
+                                                    </h5>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="a">{{ question.option|split_self:0 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="b">{{ question.option|split_self:1 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="c">{{ question.option|split_self:2 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="d">{{ question.option|split_self:3 }}<br>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endifequal %}
+
+                                    {% ifequal question_type 'mul_choice_id_ls' %}
+                                        <div class="row">
+                                            <div class="row">
+                                                <h4 class="col-xs-offset-1 pull-left">二、多选题。<br></h4>
+                                            </div>
+                                            {% for question in questions %}
+                                                <div class="row">
+                                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                                            class="text-primary">{{ forloop.counter }}. </span>{{ question.question_name }}：
+                                                    </h5>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="checkbox"
+                                                                                                    name="answer"
+                                                                                                    value="a">{{ question.option|split_self:0 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="checkbox"
+                                                                                                    name="answer"
+                                                                                                    value="b">{{ question.option|split_self:1 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="checkbox"
+                                                                                                    name="answer"
+                                                                                                    value="c">{{ question.option|split_self:2 }}<br>
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-2 pull-left"><input type="checkbox"
+                                                                                                    name="answer"
+                                                                                                    value="d">{{ question.option|split_self:3 }}<br>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endifequal %}
+
+
+
+                                    {% ifequal question_type 'judge_id_ls' %}
+                                        <div class="row">
+                                            <div class="row">
+                                                <h4 class="col-xs-offset-1 pull-left">二、判断题。<br></h4>
+                                            </div>
+                                            {% for question in questions %}
+                                                <div class="row">
+                                                    <h5 class="col-xs-offset-1 pull-left"><span
+                                                            class="text-primary">{{ forloop.counter }}. </span>{{ question.question_name }}：
+                                                    </h5>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <p class="col-xs-offset-3 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="yes">正确<br>
+                                                        </p>
+                                                        <p class="col-xs-offset-3 pull-left"><input type="radio"
+                                                                                                    name="answer"
+                                                                                                    value="no">错误<br>
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endifequal %}
+
+                                {% endfor %}
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" data-toggle="modal" data-target="#{{ exam.id }}id">修改</a>
+                {# data-target属性必须与model绑定才能弹出model #}
+                {# 如果多个元素的data-target相同，那他们打开的是同一个目标，即第一个 #}
+                <div class="modal fade" tabindex="-1" id="{{ exam.id }}id" role="dialog"
+                     aria-labelledby="change_exam">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="change_exam"><b>修改试卷</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'change_exam' %}" method="POST" class="form-inline">
+                                    <form class="form-horizontal"> {# action="#"  默认想当前页面提交#}
+                                        <input type="text" hidden name="old_exam_id"
+                                               value="{{ exam.id }}">
+                                        {# 传值给后台便于找到该计划进行更新 #}
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="template_name" class="sr-only">试卷模板名</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">试卷模板名</div>
+                                                <select class="form-control" id="template_name"
+                                                        name="template_name">
+                                                    <option value="{{ exam.exam_template.exam_template_name }}"
+                                                            selected>{{ exam.exam_template.exam_template_name }}</option>
+                                                    {% for exem_template in all_exem_templates %}
+                                                        <option value="{{ exem_template.exam_template_name }}">{{ exem_template.exam_template_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exam_major" class="sr-only">专业</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">专业</div>
+                                                <select class="form-control" id="exam_major" name="major">
+                                                    <option value="{{ exam.major }}"
+                                                            selected>{{ exam.major }}</option>
+                                                    {% for major in all_majors %}
+                                                        <option value="{{ major }}">{{ major }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exam_level" class="sr-only">层次</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">专业</div>
+                                                <select class="form-control" id="exam_level" name="level">
+                                                    <option value="{{ exam.level }}"
+                                                            selected>{{ exam.level }}</option>
+                                                    {% for level in all_levels %}
+                                                        <option value="{{ level }}">{{ level }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <input type="submit" class="btn btn-primary">
+                                        </div>
+                                    </form>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" onclick="deleteObj('{{ exam.id }}')">删除</a>
+                {# 必须给这种参数打上引号，不然前端报错 #}
+            </td>
+        </tr>
+    {% empty %}
+        <h3 class="text-danger">暂无试卷</h3>
+    {% endfor %}
+
+{% endblock %}
+
+{% block model_name %}
+    试卷
+{% endblock %}
+
+{% block ajax_delete_url %}
+    {% url 'change_exam' %}
+{% endblock %}
+
+
+

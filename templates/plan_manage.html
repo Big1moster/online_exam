@@ -1,0 +1,242 @@
+{% extends 'admin_base0.html' %}
+{% load static %}
+
+{% block title %}
+    方案管理
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'query_plan' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="plan_name">方案名称</label>
+        <input type="text" class="form-control" id="plan_name" placeholder="方案名" name="plan_name"
+               value="{{ last_query_form.plan_name }}" required>
+    </div>
+{% endblock %}
+
+{% block function_btn %}
+    <a href="#" class="btn btn-primary   input_margin_top" data-toggle="modal"
+       data-target="#add_plan">添加方案</a>
+    <div class="modal fade" tabindex="-1" id="add_plan" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-center">
+                <div class="modal-header text-center">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">添加方案</h4>
+                </div>
+                <div class="modal-body row">
+                    <form action="{% url 'plan_manage' %}" method="POST" class="form-horizontal form-inline">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="sr-only" for="plan_name">方案名称</label>
+                            <div class="input-group">
+                                <div class="input-group-addon ">方案名称</div>
+                                <input type="text" class="form-control" required id="plan_name" name="plan_name"
+                                       placeholder="输入方案名称">
+                            </div>
+                        </div>
+                        <div class="form-group input_margin_top">
+                            <label class="sr-only" for="single_choice_num">单选题</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">单选题</div>
+                                <input type="text" class="form-control" id="single_choice_num"
+                                       name="single_choice_num" oninput="value=value.replace(/[^\d]/g,'')">
+                                {# 限制只能输入数字 #}
+                                <div class="input-group-addon">道</div>
+                                <input type="text" class="form-control" oninput="value=value.replace(/[^\d]/g,'')"
+                                       name="single_choice_score">
+                                <div class="input-group-addon">分/道</div>
+                            </div>
+                        </div>
+                        <div class="form-group input_margin_top">
+                            <label class="sr-only" for="mul_choice_num">多选题</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">多选题</div>
+                                <input type="text" class="form-control" id="mul_choice_num" name="mul_choice_num"
+                                       oninput="value=value.replace(/[^\d]/g,'')">
+                                <div class="input-group-addon">道</div>
+                                <input type="text" class="form-control" name="mul_choice_score"
+                                       oninput="value=value.replace(/[^\d]/g,'')">
+                                <div class="input-group-addon">分/道</div>
+                            </div>
+                        </div>
+                        <div class="form-group input_margin_top">
+                            <label class="sr-only" for="judge_num">判断题</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">判断题</div>
+                                <input type="text" class="form-control" id="judge_num" name="judge_num"
+                                       oninput="value=value.replace(/[^\d]/g,'')">
+                                <div class="input-group-addon">道</div>
+                                <input type="text" class="form-control" name="judge_score"
+                                       oninput="value=value.replace(/[^\d]/g,'')">
+                                <div class="input-group-addon">分/道</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                Close
+                            </button>
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block th %}
+    <th class="text-center"><b>#</b></th>
+    <th class="text-center"><b>方案名称</b></th>
+    <th class="text-center"><b>单选题（分数）</b></th>
+    <th class="text-center"><b>单选题（分数）</b></th>
+    <th class="text-center"><b>单选题（分数）</b></th>
+    <th class="text-center"><b>总分</b></th>
+    <th class="text-center"><b>操作</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for plan_editor in objs %}
+        <tr id="{{ plan_editor.plan_name }}">  {# 此id用于删除该行 #}
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ plan_editor.plan_name }}</td>
+            <td class="text-center">{{ plan_editor.single_choice_num }}({{ plan_editor.single_choice_score }}分/道)</td>
+            <td class="text-center">{{ plan_editor.mul_choice_num }}({{ plan_editor.mul_choice_score }}分/道)</td>
+            <td class="text-center">{{ plan_editor.judge_num }}({{ plan_editor.judge_score }}分/道)</td>
+            <td class="text-center">{{ plan_editor.get_total_score }}</td>
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ plan_editor.id }}">修改</a>
+                {# data-target属性必须与model绑定才能弹出model #}
+                {# 如果多个元素的data-target相同，那他们打开的是同一个目标，即第一个 #}
+                <div class="modal fade" tabindex="-1" id="{{ plan_editor.id }}" role="dialog"
+                     aria-labelledby="change_plan">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="change_plan"><b>修改方案</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'change_plan' %}" method="POST" class="form-horizontal">
+                                    {# action="#"  默认想当前页面提交#}
+                                    <input type="text" hidden name="old_plan_name" value="{{ plan_editor.plan_name }}">
+                                    {# 传值给后台便于找到该计划进行更新 #}
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label class="sr-only" for="plan_name">方案名称</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon ">方案名称</div>
+                                            <input type="text" class="form-control" required id="plan_name"
+                                                   name="plan_name" value="{{ plan_editor.plan_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group input_margin_top">
+                                        <label class="sr-only" for="single_choice_num">单选题</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">单选题</div>
+                                            <input type="text" class="form-control" id="single_choice_num"
+                                                   value="{{ plan_editor.single_choice_num }}"
+                                                   name="single_choice_num" oninput="value=value.replace(/[^\d]/g,'')">
+                                            {# 限制只能输入数字 #}
+                                            <div class="input-group-addon">道</div>
+                                            <input type="text" class="form-control"
+                                                   value="{{ plan_editor.single_choice_score }}" oninput="
+                                                   value=value.replace(/[^\d]/g,'')"
+                                                   name="single_choice_score">
+                                            <div class="input-group-addon">分/道</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group input_margin_top">
+                                        <label class="sr-only" for="mul_choice_num">多选题</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">多选题</div>
+                                            <input type="text" class="form-control" id="mul_choice_num"
+                                                   name="mul_choice_num" oninput="value=value.replace(/[^\d]/g,'')"
+                                                   value="{{ plan_editor.mul_choice_num }}">
+                                            <div class="input-group-addon">道</div>
+                                            <input type="text" class="form-control" name="mul_choice_score"
+                                                   oninput="value=value.replace(/[^\d]/g,'')"
+                                                   value="{{ plan_editor.mul_choice_score }}">
+
+                                            <div class="input-group-addon">分/道</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group input_margin_top">
+                                        <label class="sr-only" for="judge_num">判断题</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">判断题</div>
+                                            <input type="text" class="form-control" id="judge_num" name="judge_num"
+                                                   oninput="value=value.replace(/[^\d]/g,'')"
+                                                   value="{{ plan_editor.judge_num }}">
+                                            <div class="input-group-addon">道</div>
+                                            <input type="text" class="form-control" name="judge_score"
+                                                   oninput="value=value.replace(/[^\d]/g,'')"
+                                                   value="{{ plan_editor.judge_score }}">
+                                            <div class="input-group-addon">分/道</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        {#                                        <a href="#"  onclick="ChangePlan({{ plan_editor.id }})"#}
+                                        {#                                               class="btn btn-primary  col-xs-offset-2 col-xs-8">更新资料#}
+                                        {#                                        </a>#}
+                                        <input type="submit" value="更新资料"
+                                               class="btn btn-primary  col-xs-offset-2 col-xs-8">
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" onclick="deleteObj('{{ plan_editor.plan_name }}')">删除</a> {# 必须给这种参数打上引号，不然前端报错 #}
+            </td>
+        </tr>
+    {% empty %}
+        <h3 class="text-danger">暂无试卷方案</h3>
+    {% endfor %}
+    <script type="text/javascript">  {# 测试获取表单值，异步提交 #}
+    function ChangePlan(id) {
+        var plan_name = $('input[name=plan_name]')[0].value;
+        console.log(plan_name);
+        var single_choice_num = $('input[name=single_choice_num]')[0].value;
+        var single_choice_score = $('input[name=single_choice_score]')[0].value;
+        var mul_choice_num = $('input[name=mul_choice_num]')[0].value;
+        var mul_choice_score = $('input[name=mul_choice_score]')[0].value;
+        var judge_num = $('input[name=judge_num]')[0].value;
+        var judge_score = $('input[name=judge_score]')[0].value;
+        var data = {
+            plan_name: plan_name,
+            single_choice_num: single_choice_num,
+            single_choice_score: single_choice_score,
+            mul_choice_num: mul_choice_num,
+            mul_choice_score: mul_choice_score,
+            judge_num: judge_num,
+            judge_score: judge_score
+        };
+        console.log(data);
+    }
+    </script>
+{% endblock %}
+{% block model_name %}
+    方案
+{% endblock %}
+
+{% block ajax_delete_url %}
+    {% url 'change_plan' %}
+{% endblock %}
+
+
+
+
+
+

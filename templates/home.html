@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    在线考试系统|首页
+{% endblock %}
+
+{% block header_extends %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <!-- 引入 highcharts.js -->
+    <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+{% endblock %}
+
+{% block nav_home_active %}
+    active
+{% endblock %}
+
+{% block content %}
+
+    <h3 class="home-content">欢迎访问在线考试系统</h3>
+
+{% endblock %} 

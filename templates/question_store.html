@@ -1,0 +1,317 @@
+{% extends 'teacher_base0.html' %}
+{% load myfilter %}
+{% load static %}
+
+{% block title %}
+    题库管理
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'question_query' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="subject" class="control-label">科目</label>
+        <select class="form-control" id="subject" name="subject">
+            {% if last_query_form.subject %}
+                <option value="{{ last_query_form.subject }}"
+                        selected>{{ last_query_form.subject }}</option>
+            {% endif %}
+            {% for subject in all_subjects %}
+                <option value="{{ subject }}">{{ subject }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="knowledge" class="control-label">知识点</label>
+        <select class="form-control" id="knowledge" name="knowledge">
+            {% if last_query_form.knowledge %}
+                <option value="{{ last_query_form.knowledge }}" selected>{{ last_query_form.knowledge }}</option>
+            {% endif %}
+            {% for knowledge in all_knowledges %}
+                <option value="{{ knowledge }}">{{ knowledge }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="difficult" class="control-label">难度</label>
+        <select class="form-control" id="difficult" name="difficult">
+            {% if last_query_form.difficult %}
+                <option value="{{ last_query_form.difficult }}" selected>{{ last_query_form.difficult }}</option>
+            {% endif %}
+            {% for difficult in all_difficults %}
+                <option value="{{ difficult }}">{{ difficult }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+{% endblock %}
+
+{% block function_btn %}
+    <a href="#" class="btn btn-primary   input_margin_top" data-toggle="modal"
+       data-target="#add_questions">导入题库</a>
+    <div class="modal fade" tabindex="-1" id="add_questions" role="dialog"
+         aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">批量导入题库</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'question_store' %}" method="POST" class="form-horizontal"
+                          enctype="multipart/form-data">
+                        {# 上传文件必须加上enctype="multipart/form-data" #}
+                        {% csrf_token %}
+                        <input type="file" id="question_store" name="question_store">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">
+                                Close
+                            </button>
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block th %}
+    <th class="text-center"><b>#</b></th>
+    <th class="text-center"><b>题目</b></th>
+    <th class="text-center"><b>答案</b></th>
+    <th class="text-center"><b>分数</b></th>
+    <th class="text-center"><b>题型</b></th>
+    <th class="text-center"><b>知识点</b></th>
+    <th class="text-center"><b>科目</b></th>
+    <th class="text-center"><b>难度</b></th>
+    <th class="text-center"><b>操作</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for question in objs %}
+        <tr id="{{ question.id }}">  {# 此id用于删除该行 #}
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ question.question_name }}</td>
+            <td class="text-center">{{ question.answer }}</td>
+            <td class="text-center">{{ question.score }}</td>
+            <td class="text-center">{{ question.question_type }}</td>
+            <td class="text-center">{{ question.knowledge.knowledge_name }}</td>
+            <td class="text-center">{{ question.subject }}</td>
+            <td class="text-center">{{ question.difficult }}</td>
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ question.id }}yl">预览</a>
+                <div class="modal fade" tabindex="-1" id="{{ question.id }}yl" role="dialog"
+                     aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="row">
+                                <h4 class="col-xs-offset-1 pull-left"><span
+                                        class="text-primary">1. </span>{{ question.question_name }}：</h4>
+
+                            </div>
+                            <form>
+                                {% ifequal question.question_type '判断题' %}
+                                    <div class="row">
+                                        <p class="col-xs-offset-3 pull-left"><input type="radio" name="answer"
+                                                                                    value="yes">正确<br></p>
+                                        <p class="col-xs-offset-3 pull-left"><input type="radio" name="answer"
+                                                                                    value="no">错误<br></p>
+                                    </div>
+                                {% endifequal %}
+                                {% ifequal question.question_type '单选题' %}
+                                    <div class="row">
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="radio" name="answer"
+                                                                                        value="a">{{ question.option|split_self:0 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="radio" name="answer"
+                                                                                        value="b">{{ question.option|split_self:1 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="radio" name="answer"
+                                                                                        value="c">{{ question.option|split_self:2 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="radio" name="answer"
+                                                                                        value="d">{{ question.option|split_self:3 }}<br>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endifequal %}
+
+
+                                {% ifequal question.question_type '多选题' %}
+                                    <div class="row">
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="checkbox" name="answer"
+                                                                                        value="a">{{ question.option|split_self:0 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="checkbox" name="answer"
+                                                                                        value="b">{{ question.option|split_self:1 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="checkbox" name="answer"
+                                                                                        value="c">{{ question.option|split_self:2 }}<br>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <p class="col-xs-offset-2 pull-left"><input type="checkbox" name="answer"
+                                                                                        value="d">{{ question.option|split_self:3 }}<br>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endifequal %}
+
+
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" data-toggle="modal" data-target="#{{ question.id }}id">编辑</a>
+                {# data-target属性必须与model绑定才能弹出model #}
+                {# 如果多个元素的data-target相同，那他们打开的是同一个目标，即第一个 #}
+                <div class="modal fade" tabindex="-1" id="{{ question.id }}id" role="dialog"
+                     aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel"><b>编辑题目</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'question_store' %}" method="POST" class="form-horizontal">
+                                    {# action="#"  默认想当前页面提交#}
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="question_name" class="col-sm-2  control-label">题干</label>
+                                        <div class="col-sm-9">
+                                            <textarea hidden
+                                                      name="old_question_name">{{ question.question_name }}</textarea>
+                                            <textarea class="form-control" id="question_name"
+                                                      name="questionName">{{ question.question_name }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="answer" class="col-sm-2 control-label">答案</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="answer"
+                                                   name="answer"
+                                                   placeholder="答案" value="{{ question.answer }}">
+                                            {# 不需要检验该字段 #}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="score" class="col-sm-2 control-label">分数</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="score" name="score"
+                                                   placeholder="分数" value="{{ question.score }}"
+                                                   oninput="value=value.replace(/[^\d]/g,'')">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="question_type" class="col-sm-2 control-label">题型</label>
+                                        <div class="col-sm-9">
+                                            <select disabled class="form-control" id="question_type"
+                                                    name="question_type">
+                                                <option readonly
+                                                        value="{{ question.question_type }}">{{ question.question_type }}</option>
+
+                                                {% for question_type in all_question_types %}
+                                                    <option value="{{ question_type }}">{{ question_type }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="knowledge_name" class="col-sm-2 control-label">知识点</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="knowledge_name" name="knowledge_name">
+                                                <option value="{{ question.knowledge.knowledge_name }}">{{ question.knowledge.knowledge_name }}</option>
+                                                {% for knowledge in all_knowledges %}
+                                                    <option value="{{ knowledge }}">{{ knowledge }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="subject" class="col-sm-2 control-label">科目</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="subject" name="subject">
+                                                <option value="{{ question.subject }}">{{ question.subject }}</option>
+                                                {% for subject in all_subjects %}
+                                                    <option value="{{ subject }}">{{ subject }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="difficult" class="col-sm-2 control-label">难度</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="difficult" name="difficult">
+                                                <option value="{{ question.difficult }}">{{ question.difficult }}</option>
+                                                {% for difficult in all_difficults %}
+                                                    <option value="{{ difficult }}">{{ difficult }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <input type="submit" value="更新资料"
+                                               class="btn btn-primary  col-xs-offset-2 col-xs-8">
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" onclick="deleteObj('{{ question.id }}')">删除</a> {# 必须给这种参数打上引号，不然前端报错 #}
+                {# 必须给这种参数打上引号，不然前端报错 #}
+            </td>
+        </tr>
+    {% empty %}
+        <h3 class="text-danger">暂无题目</h3>
+    {% endfor %}
+{% endblock %}
+
+
+{% block model_name %}
+    题目
+{% endblock %}
+
+{% block ajax_delete_url %}
+    {% url 'question_store' %}
+{% endblock %}

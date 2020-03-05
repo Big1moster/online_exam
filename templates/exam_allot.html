@@ -1,0 +1,439 @@
+{% extends 'admin_base0.html' %}
+{% load myfilter %}
+{% load static %}
+
+{% block title %}
+    试卷分配
+{% endblock %}
+
+{% block query_action_url %}
+    {% url 'query_exam_allot' %}
+{% endblock %}
+
+{% block query_input %}
+    <div class="form-group input_margin_top">
+        <label for="level" class="control-label">层次</label>
+        <select class="form-control" id="level" name="level">
+            {% if last_query_form.level %}
+                <option value="{{ last_query_form.level }}" selected>{{ last_query_form.level }}</option>
+            {% endif %}
+            {% for level in all_levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="subject" class="control-label">科目</label>
+        <select class="form-control" id="subject" name="subject">
+            {% if last_query_form.subject %}
+                <option value="{{ last_query_form.subject }}" selected>{{ last_query_form.subject }}</option>
+            {% endif %}
+            {% for subject in all_subjects %}
+                <option value="{{ subject }}">{{ subject }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="major" class="control-label">专业</label>
+        <select class="form-control" id="major" name="major">
+            {% if last_query_form.major %}
+                <option value="{{ last_query_form.major }}" selected>{{ last_query_form.major }}</option>
+            {% endif %}
+            {% for major in all_majors %}
+                <option value="{{ major }}">{{ major }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group input_margin_top">
+        <label for="exam_template">试卷模板</label>
+        <input type="text" class="form-control" id="exam_template" placeholder="试卷模板" name="exam_template"
+               value="{{ last_query_form.exam_template }}">
+    </div>
+{% endblock %}
+
+{#{% block function_btn %}#}
+{#    <a href="#" class="btn btn-primary  input_margin_top" data-toggle="modal"#}
+{#       data-target="#defined">批量分配</a>#}
+{#    <div class="modal fade" tabindex="-1" id="defined" role="dialog" aria-labelledby="myModalLabel">#}
+{#        <div class="modal-dialog modal-lg" role="document">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header text-center">#}
+{#                    <button type="button" class="close" data-dismiss="modal"#}
+{#                            aria-label="Close"><span aria-hidden="true">&times;</span>#}
+{#                    </button>#}
+{#                    <h4 class="modal-title" id="myModalLabel">自定义生成</h4>#}
+{#                </div>#}
+{#                <div class="modal-body row">#}
+{#                    <form action="#" method="POST" class="form-horizontal">#}
+{#                        {% csrf_token %}#}
+{#                        <div class="row input_margin_top">#}
+                            {#                            <div class="form-group col-xs-offset-2 col-xs-4">#}
+                            {#                                <label class="sr-only" for="exampleInputAmount0">考试名称</label>#}
+                            {#                                <div class="input-group ">#}
+                            {#                                    <div class="input-group-addon ">考试名称</div>#}
+                            {#                                    <input type="text" class="form-control" id="exampleInputAmount0">#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+{#                            <div class="form-group col-xs-offset-1">#}
+{#                                <label class="sr-only" for="exampleInputAmount10">考试批次</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon">考试批次</div>#}
+{#                                    <input type="text" class="form-control" id="exampleInputAmount10">#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{#                        <div class="row input_margin_top">#}
+{#                            <div class="form-group col-xs-offset-2 col-xs-4">#}
+{#                                <label for="level" class="sr-only">选择科目</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon ">选择科目</div>#}
+{#                                    <select class="form-control" id="level" name="level">#}
+{#                                        <option value="bk" selected>数学</option>#}
+{#                                        <option value="zk">语文</option>#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group  col-xs-offset-1 col-xs-4">#}
+{#                                <label for="level1" class="sr-only">选择方案</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon ">选择方案</div>#}
+{#                                    <select class="form-control" id="level1" name="level1">#}
+{#                                        <option value="bk" selected>测试方案</option>#}
+{#                                        <option value="zk">调试方案</option>#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="row input_margin_top">#}
+{#                            <div class="form-group  col-xs-offset-2 col-xs-4">#}
+{#                                <label for="level11" class="sr-only">选择难度</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon ">选择难度</div>#}
+{#                                    <select class="form-control" id="level11" name="level11">#}
+{#                                        <option value="bk" selected>一般</option>#}
+{#                                        <option value="zk">困觉</option>#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group  col-xs-offset-1">#}
+{#                                <label class="sr-only" for="exampleInputAmount4">考试时长</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon">考试时长</div>#}
+{#                                    <input type="datetime" class="form-control"#}
+{#                                           id="exampleInputAmount4">#}
+{#                                    <div class="input-group-addon">分钟</div>#}
+{#                                </div>#}
+{##}
+{##}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="row input_margin_top">#}
+{#                            <div class="form-group col-xs-offset-2 col-xs-4">#}
+{#                                <label class="sr-only" for="exampleInputAmount00">考试开始</label>#}
+{#                                <div class="input-group ">#}
+{#                                    <div class="input-group-addon ">考试开始</div>#}
+{#                                    <input type="text" class="form-control" id="exampleInputAmount00">#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group col-xs-offset-1">#}
+{#                                <label class="sr-only" for="exampleInputAmount101">考试结束</label>#}
+{#                                <div class="input-group">#}
+{#                                    <div class="input-group-addon">考试结束</div>#}
+{#                                    <input type="text" class="form-control" id="exampleInputAmount101">#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{##}
+{#                        <div class="modal-footer">#}
+{#                            <button type="button" class="btn btn-default"#}
+{#                                    data-dismiss="modal">#}
+{#                                Close#}
+{#                            </button>#}
+{#                            <input type="submit" class="btn btn-primary">#}
+{#                        </div>#}
+                        {#                                        <div class="row input_margin_top">#}
+                        {#                                            <input type="submit" value="添加试卷"#}
+                        {#                                                   class="btn btn-primary  col-xs-offset-2 col-xs-8">#}
+                        {#                                        </div>#}
+{#                    </form>#}
+{##}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#{% endblock %}#}
+
+{% block th %}
+    <th class="text-center"><b>#pk</b></th>
+    <th class="text-center"><b>考试名称</b></th>
+    <th class="text-center"><b>试卷模板</b></th>
+    <th class="text-center"><b>单选题数量</b></th>
+    <th class="text-center"><b>多选题数量</b></th>
+    <th class="text-center"><b>判断题数量</b></th>
+    <th class="text-center"><b>总分</b></th>
+    <th class="text-center"><b>分配对象(/人)</b></th>
+    <th class="text-center"><b>操作</b></th>
+{% endblock %}
+
+{% block tbody_tr %}
+    {% for exam in objs %}
+
+        <tr id="{{ exam.id }}">  {# 此id用于删除该行 #}
+{#            <td class="text-center">{{ forloop.counter }}</td>#}
+            <td class="text-center">{{ exam.id }}</td>
+            <td class="text-center">{{ exam.exam_name }}</td>
+            <td class="text-center">{{ exam.exam_template.exam_template_name }}</td>
+            <td class="text-center">{{ exam.get_single_choice_num }}</td>
+            <td class="text-center">{{ exam.get_mul_choice_num }}</td>
+            <td class="text-center">{{ exam.get_judge_num }}</td>
+            <td class="text-center">{{ exam.get_total_score }}</td>
+
+            {% if exam.allot.count %}
+                <td class="text-center bg-success"><a href="#" data-toggle="modal" data-target="#{{ exam.id }}allot" class="text-success">已分配({{ exam.allot.count }})</a>
+                <div class="modal fade" tabindex="-1" id="{{ exam.id }}allot" role="dialog"
+                     aria-labelledby="myModalLabe">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="myModalLabe"><b>已分配用户信息</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered table-hover input_margin_top">
+                                            {# 带边框-鼠标悬停效果 #}
+                                            <thead>
+                                            <tr>
+                                                <th class="text-center"><b>#</b></th>
+                                                <th class="text-center"><b>姓名</b></th>
+                                                <th class="text-center"><b>身份证号</b></th>
+                                                <th class="text-center"><b>层次</b></th>
+                                                <th class="text-center"><b>专业</b></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for user in exam.allot.all %}
+                                                <tr><td class="text-center">{{ forloop.counter }}</td>
+                                                <td class="text-center">{{ user.username }}</td>
+                                                <td class="text-center">{{ user.idcard }}</td>
+                                                <td class="text-center">{{ user.level }}</td>
+                                                <td class="text-center">{{ user.major }}</td></tr>
+
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div></td>
+
+            {% else %}
+                <td class="text-center bg-danger"><a href="#" class="text-danger">未分配</a></td>
+            {% endif %}
+
+            <td class="text-center">
+                <a href="#" data-toggle="modal" data-target="#{{ exam.id }}id">分配任务</a>
+                <div class="modal fade" tabindex="-1" id="{{ exam.id }}id" role="dialog"
+                     aria-labelledby="change_exam">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="change_exam"><b>分配该试卷给学生</b></h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'exam_allot' %}" method="POST" class="form-inline"
+                                      id="{{ exam.id }}a">
+                                    <form class="form-horizontal row"> {# action="#"  默认想当前页面提交#}
+                                        <input type="text" hidden name="exam_id"
+                                               value="{{ exam.id }}">
+                                        {# 传值给后台便于找到该计划进行更新 #}
+                                        {% csrf_token %}
+                                        <div class="form-group col-xs-offset-1">
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">层次</div>
+                                                <select class="form-control" name="level"
+                                                        onchange="queryAllot('{{ exam.id }}')">
+                                                    <option value="{{ exam.level }}"
+                                                            selected>{{ exam.level }}</option>
+                                                    {% for level in all_levels %}
+                                                        <option value="{{ level }}">{{ level }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-xs-offset-1">
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">专业</div>
+                                                <select class="form-control" name="major"
+                                                        onchange="queryAllot('{{ exam.id }}')">
+                                                    <option value="{{ exam.major }}"
+                                                            selected>{{ exam.major }}</option>
+                                                    {% for major in all_majors %}
+                                                        <option value="{{ major }}">{{ major }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group input_margin_top">
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">用户名</div>
+                                                <input type="text" class="form-control" id="username"
+                                                       onchange="queryAllot('{{ exam.id }}')"
+                                                       placeholder="用户名" name="username"
+                                                       value="{{ exam.alloter.username }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group input_margin_top">
+                                            <div class="input-group">
+                                                <div class="input-group-addon ">身份证号</div>
+                                                <input type="text" class="form-control" id="idcard"
+                                                       onchange="queryAllot('{{ exam.id }}')"
+                                                       placeholder="身份证号" name="idcard"
+                                                       value="{{ exam.alloter.idcard }}">
+                                            </div>
+                                        </div>
+
+                                        <table class="table table-bordered table-hover input_margin_top">
+                                            {# 带边框-鼠标悬停效果 #}
+                                            <thead>
+                                            <tr>
+                                                <th class="text-center"><b><label for="all">
+                                                    <input type="checkbox" id="{{ exam.id }}all" onclick="clickAll('{{ exam.id }}')">全选
+                                                </label></b></th>
+                                                <th class="text-center"><b>姓名</b></th>
+                                                <th class="text-center"><b>身份证号</b></th>
+                                                <th class="text-center"><b>层次</b></th>
+                                                <th class="text-center"><b>专业</b></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="{{ exam.id }}tbody">
+                                            </tbody>
+                                        </table>
+
+
+                                        <div class="modal-footer">
+                                            <p class="text-muted" id="{{ exam.id }}user_num"></p>
+                                            <button type="button" class="btn btn-default"
+                                                    data-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <input id="{{ exam.id }}submit" type="submit" class="btn btn-primary" value="分配任务">
+                                        </div>
+                                    </form>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# 必须给这种参数打上引号，不然前端报错 #}
+            </td>
+        </tr>
+    {% empty %}
+        <h3 class="text-danger">暂无试卷</h3>
+    {% endfor %}
+
+{% endblock %}
+
+{% block model_name %}
+    试卷
+{% endblock %}
+
+{% block script_extends %}
+
+
+    <script type="text/javascript">
+        {# 全选与取消全选 #}
+        function clickAll(exam_id) {
+            var trs = $("#" + exam_id + "tbody")[0].children;
+            console.log(trs);
+            if ($("#" + exam_id +'all')[0].checked) {
+                for (var i = 0; i < trs.length; i++) {
+                    trs[i].firstElementChild.firstElementChild.checked = true
+                }
+            } else {
+                for (var j = 0; j < trs.length; j++) {
+                    trs[j].firstElementChild.firstElementChild.checked = false
+                }
+            }
+        }
+
+        {# 检测表单修改，及时将查询结果展示 #}
+        function queryAllot(exam_id) {
+            var form_data = $("#"+ exam_id +"a").serializeArray(); {# 不知道为什么，动态获取id不加a字符串会取不到表单 #}
+{#            console.log(typeof form_data, form_data);#}
+{#            console.log(form_data[0]["value"]);#}
+            $.ajax({
+                url:{% url 'exam_allot' %},
+                type: 'POST',
+                data: {
+                    exam_id: form_data[0]["value"],
+                    level: form_data[2]["value"],
+                    major: form_data[3]["value"],
+                    username: form_data[4]["value"],
+                    idcard: form_data[5]["value"],
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                cache: false,
+                success: function (result, text_status) {
+{#                    console.log(result, typeof result);#}
+                    if (result['status'] == 'SUCCESS') {
+                        //更新查询行
+
+                        $("#" + exam_id + "tbody").empty();
+                        {# 删除被选元素的子元素 #}
+
+                        var num = result['user_num'];
+                        $("#" + exam_id + "user_num").text('共有' + num + '个符合条件的用户');
+                        if (result['users_ls'].length < 1) {
+                            $("#" + exam_id + "tbody").append('<h1 class="text-danger">为未查询到符合条件的用户</h1>');
+                        } else {
+                            for (var i = 0; i < result['users_ls'].length; i++) {
+                                var username = result['users_ls'][i].username;
+                                var idcard = result['users_ls'][i].idcard;
+                                var level = result['users_ls'][i].level;
+                                var major = result['users_ls'][i].major;
+                                var user_id = result['users_ls'][i].user_id;
+                                console.log(username, typeof username);
+{#                                console.log(num, typeof num);#}
+                                var th = i + 1;
+                                var tr = '<tr><td class="text-center"><input type="checkbox" class="checkbox_select" name="item" value="' + user_id + '">' + th + '</td>' +
+                                    '<td class="text-center">' + username + '</td>' +
+                                    '<td class="text-center">' + idcard + '</td>' +
+                                    '<td class="text-center">' + level + '</td>' +
+                                    '<td class="text-center">' + major + '</td>' +
+                                    '</tr>';
+                                $("#"+exam_id+"tbody").append(tr);
+                            }
+                        }
+                    }
+                    else {
+                        alert(result['ajax_delete_error_msg']);
+                    }
+                },
+                error: function (xhr, result, error_msg) {
+                    console.log(xhr, result, error_msg);
+                    console.log(this);   //调用本次ajax请求时传递的options参数
+                }
+            });
+            clickAll(exam_id);
+        }
+    </script>
+{% endblock %}
+
+

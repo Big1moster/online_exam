@@ -1,0 +1,234 @@
+{% extends 'teacher_base2.html' %}
+{% load static %}
+
+{% block title %}
+    教师个人资料
+{% endblock %}
+
+{% block main-right %}
+    <div class="container" style="margin-top: 40px">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-1 col-md-8 col-md-offset-1  ">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">
+                            <b>个人资料</b>
+                            <h4 class="text-center text-success" id="success_change">{{ success_change_msg }}</h4>
+                            <h4 class="text-center text-danger" id="error_change">{{ error_change_msg }}</h4>
+                            {# 修改成功提示 #}
+                        </h2>
+                    </div>
+                    <div class="panel-body row">
+                    <div class="col-xs-4 row">
+                        <div>
+
+                            <img src="/media/{{ request.user.touxiang }}" alt="头像" id="change_touxiang" class="col-xs-offset-5">
+                        </div>
+                        <p class="btn btn-default col-xs-offset-5 input_margin_top" data-toggle="modal"
+                               data-target="#change_touxiang_Modal">修改头像</p>
+                        <div class="modal fade" tabindex="-1" id="change_touxiang_Modal" role="dialog"
+                                 aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close"><span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">修改头像</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{% url 'personal_info' %}" method="POST" class="form-horizontal"
+                                                  enctype="multipart/form-data">
+                                                {# 上传文件必须加上enctype="multipart/form-data" #}
+                                                {% csrf_token %}
+                                                <input type="file" id="user_touxiang" name="user_touxiang">
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default"
+                                                            data-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <input type="submit" class="btn btn-primary">
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <hr>
+                        <p class="btn btn-default col-xs-offset-5" data-toggle="modal"
+                               data-target="#change_pwd_Modal">修改密码</p>
+                        <div class="modal fade" tabindex="-1" id="change_pwd_Modal" role="dialog"
+                                 aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close"><span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form class="form-horizontal form-inline text-center" id="fm">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="old_pwd">旧密码</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon ">旧密码</div>
+                                                        <input type="text" class="form-control" required id="old_pwd"
+                                                               name="old_pwd"
+                                                               placeholder="旧密码">
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="new_pwd">新密码</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon ">新密码</div>
+                                                        <input type="text" class="form-control" required id="new_pwd"
+                                                               name="new_pwd"
+                                                               placeholder="新密码">
+                                                    </div>
+                                                </div>
+                                                    <hr>
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="again_pwd">旧密码</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon ">旧密码</div>
+                                                        <input type="text" class="form-control" required id="again_pwd"
+                                                               name="again_pwd"
+                                                               placeholder="再输入一次密码">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default"
+                                                            data-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <button type="button" class="btn btn-primary" id="fm_btn">ajax提交<button>
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                        <form action="{% url 'personal_info' %}" method="POST" class="form-horizontal col-xs-8">
+                            <input type="text" hidden name="old_username" value="{{ request.user.username }}">
+                            <input type="text" hidden name="old_idcard" value="{{ request.user.idcard }}">
+                            <input type="text" hidden name="old_email" value="{{ request.user.email }}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="uname" class="col-sm-3  control-label">姓名</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="uname" name="username"
+                                           placeholder="用户名" value="{{ request.user.username }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idcard" class="col-sm-3 control-label">身份证号</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="idcard" name="idcard"
+                                           placeholder="18位身份证号" value="{{ request.user.idcard }}">
+                                </div>
+
+                            </div>
+                        {% comment %}
+                        <div class="form-group">
+                                <label for="level" class="col-sm-3 control-label">层次</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="level" name="level">
+                                        <option value="本科" {% ifequal request.user.level '本科' %}selected{% endifequal %}>
+                                            本科
+                                        </option>
+                                        <option value="专科" {% ifequal request.user.level '专科' %}selected{% endifequal %}>
+                                            专科
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="major" class="col-sm-3 control-label">专业</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="major" name="major">
+                                        <option value="软件工程"
+                                                {% ifequal request.user.major '软件工程' %}selected{% endifequal %}>软件工程
+                                        </option>
+                                        <option value="法学" {% ifequal request.user.major '法学' %}selected{% endifequal %}>
+                                            法学
+                                        </option>
+                                        <option value="数学" {% ifequal request.user.major '数学' %}selected{% endifequal %}>
+                                            数学
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        {% endcomment %}
+                            <div class="form-group">
+                                <label for="email" class="col-sm-3  control-label">邮箱</label>
+                                <div class="col-sm-9">
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           placeholder="绑定邮箱" value="{{ request.user.email }}">
+                                </div>
+                            </div>
+                        <input type="submit" value="保存"
+                                       class="btn btn-primary  col-xs-offset-2 col-xs-8">
+                        </form>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        {#    color: 线条颜色, 默认: '0,0,0' ；三个数字分别为(R,G,B)，注意用,分割#}
+        {#pointColor: 交点颜色, 默认: '0,0,0' ；三个数字分别为(R,G,B)，注意用,分割#}
+        {#opacity: 线条透明度（0~1）, 默认: 0.5#}
+        {#count: 线条的总数量, 默认: 150#}
+        {#zIndex: 背景的z-index属性，css属性用于控制所在层的位置, 默认: -1#}
+        <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="99"
+                src="{% static 'dist/canvas-nest.js' %}"></script>
+        <script type="text/javascript">
+            $('#success_create').click(function () {
+                $('#success_create').hide()
+            });
+
+
+            $("#fm_btn").click(function(){
+                var old_pwd = $('old_pwd');
+                  //预先发送csrf值，防止出现403错误,没啥用
+                $.ajaxSetup({data: {csrfmiddlewaretoken: '{{ csrf_token }}'}});
+                $.ajax({
+                    url:{% url 'personal_info' %},
+                    type:'POST',
+                    dataType:"JSON",
+                    data:$("#fm").serialize(),
+                    cache: false,
+                    success:function(result,text_status){
+                        if (result['status'] == 'SUCCESS'){
+                            alert('密码修改成功，请重新登陆');
+                            window.location.href = '{% url 'login' %}';
+                        }else {
+                            console.log(no);
+
+                        }
+                    },
+                    error: function (xhr, result, error_msg) {  {# 异常之后的回调 3个参数:即XMLHttpRequest对象、错误信息、捕获的错误对象(可选)#}
+                        console.log('no');
+                        console.log(xhr, result, error_msg);
+            }
+                })
+             });
+
+
+
+
+        </script>
+    </div>
+{% endblock %}
